@@ -19,13 +19,16 @@ import MongoStore from 'connect-mongo';
 const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27018/kambaz"
 mongoose.connect(CONNECTION_STRING);
 const app = express()
+app.use(
+    cors({
+        credentials: true,
+        origin: process.env.NETLIFY_URL || "http://localhost:5173",
+    })
+);
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_CONNECTION_STRING,
-  }),
 };
 if (process.env.NODE_ENV !== "development") {
   sessionOptions.proxy = true;
@@ -36,12 +39,6 @@ if (process.env.NODE_ENV !== "development") {
   };
 }
 app.use(session(sessionOptions)); 
-app.use(
-    cors({
-        credentials: true,
-        origin: process.env.NETLIFY_URL || "http://localhost:5173",
-    })
-);
 app.use(express.json());
 UserRoutes(app);
 CourseRoutes(app);
