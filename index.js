@@ -14,6 +14,7 @@ import CourseRoutes from "./Kambaz/Courses/routes.js";
 import ModuleRoutes from "./Kambaz/Modules/routes.js";
 import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentsRoutes from "./Kambaz/Enrollments/routes.js";
+import MongoStore from 'connect-mongo';
 
 const CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || "mongodb://127.0.0.1:27018/kambaz"
 mongoose.connect(CONNECTION_STRING);
@@ -22,6 +23,9 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_CONNECTION_STRING,
+  }),
 };
 if (process.env.NODE_ENV !== "development") {
   sessionOptions.proxy = true;
